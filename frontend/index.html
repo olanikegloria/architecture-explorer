@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Architecture Explorer</title>
+  <style>
+    :root {
+      --bg: #0f1419;
+      --panel: #1a2332;
+      --text: #e7ecf3;
+      --muted: #8b9bb4;
+      --accent: #3d9cf0;
+      --ok: #3ecf8e;
+      --warn: #f0a23d;
+      --border: #2a3548;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+      background: radial-gradient(ellipse at top, #1a2a3a 0%, var(--bg) 55%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    header {
+      padding: 1.5rem 2rem 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    header h1 { margin: 0; font-size: 1.4rem; letter-spacing: -0.02em; }
+    header p { margin: 0.35rem 0 1rem; color: var(--muted); font-size: 0.95rem; }
+    main {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      padding: 1rem 2rem 2rem;
+    }
+    @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
+    section {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.15rem;
+    }
+    h2 { margin: 0 0 0.75rem; font-size: 1rem; }
+    button {
+      background: var(--accent);
+      color: #041018;
+      border: none;
+      border-radius: 6px;
+      padding: 0.55rem 1rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button.secondary { background: #2a3a50; color: var(--text); }
+    .row { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.75rem; }
+    .stat { color: var(--muted); font-size: 0.85rem; margin-bottom: 0.75rem; }
+    ul.tree { list-style: none; padding: 0; margin: 0; max-height: 420px; overflow: auto; }
+    ul.tree li {
+      padding: 0.45rem 0.55rem;
+      border-bottom: 1px solid var(--border);
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 0.8rem;
+    }
+    ul.tree .imports { color: var(--muted); display: block; margin-top: 0.2rem; font-size: 0.75rem; }
+    textarea, input[type="text"] {
+      width: 100%;
+      background: #0d1218;
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 6px;
+      padding: 0.65rem;
+      font: inherit;
+      margin-bottom: 0.5rem;
+    }
+    #answer {
+      white-space: pre-wrap;
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 0.82rem;
+      background: #0d1218;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.75rem;
+      min-height: 140px;
+    }
+    .ok { color: var(--ok); }
+    .warn { color: var(--warn); }
+    .cites { margin-top: 0.5rem; font-size: 0.8rem; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Architecture Explorer</h1>
+    <p>Import graph from <code>sample-repo/</code> + grounded Q&amp;A with file citations.</p>
+  </header>
+  <main>
+    <section>
+      <h2>Import graph</h2>
+      <div class="row">
+        <button id="btnIndex">Index sample-repo</button>
+        <button class="secondary" id="btnRefresh">Refresh</button>
+      </div>
+      <div class="stat" id="stats">Not indexed yet.</div>
+      <ul class="tree" id="tree"></ul>
+    </section>
+    <section>
+      <h2>Ask (graph-grounded)</h2>
+      <input type="text" id="question" value="Where does login authentication start?" />
+      <div class="row">
+        <button id="btnAsk">Ask</button>
+      </div>
+      <div id="answer">Answers cite file paths from the graph only.</div>
+      <div class="cites" id="cites"></div>
+    </section>
+  </main>
+  <script>
+    async function indexRepo() {
+      const res = await fetch("/index", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" });
+      const data = await res.json();
+      document.getElementById("stats").textContent = res.ok
+        ? `Indexed ${data.nodes} nodes / ${data.edges} edges at ${data.indexedAt}`
+        : (data.error || "Index failed");
+      await loadGraph();
+    }
+
+    async function loadGraph() {
+      const res = await fetch("/graph");
+      if (!res.ok) {
+        document.getElementById("tree").innerHTML = "<li class='warn'>No graph — click Index.</li>";
+        return;
+      }
+      const g = await res.json();
+      document.getElementById("stats").textContent =
+        `${g.nodes.length} nodes / ${g.edges.length} edges · ${g.indexedAt}`;
+      document.getElementById("tree").innerHTML = g.nodes.map(n => {
+        const imports = n.imports.length
+          ? `<span class="imports">→ ${n.imports.join(", ")}</span>`
+          : `<span class="imports">(no local imports)</span>`;
+        return `<li><strong>${n.path}</strong>${imports}</li>`;
+      }).join("");
+    }
+
+    async function ask() {
+      const question = document.getElementById("question").value;
+      const res = await fetch("/ask", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        document.getElementById("answer").textContent = data.error || "Ask failed";
+        document.getElementById("cites").textContent = "";
+        return;
+      }
+      const el = document.getElementById("answer");
+      el.className = data.answered ? "ok" : "warn";
+      el.textContent = data.answer;
+      document.getElementById("cites").textContent = data.citations?.length
+        ? "Citations: " + data.citations.join(" · ")
+        : "";
+    }
+
+    document.getElementById("btnIndex").onclick = indexRepo;
+    document.getElementById("btnRefresh").onclick = loadGraph;
+    document.getElementById("btnAsk").onclick = ask;
+    loadGraph();
+  </script>
+</body>
+</html>

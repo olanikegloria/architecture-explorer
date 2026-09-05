@@ -1,36 +1,98 @@
 # Architecture Explorer
 
-**Status:** Phase 0 — planning only. Do not implement until proposal is accepted.  
+**Status:** Runnable MVP scaffold  
 **Folder:** `03-architecture-explorer`
+
+Parse a sample TypeScript/JS repo into an import graph and answer architecture questions **only** with graph evidence + file-path citations.
 
 ---
 
-## Problem
+## What works in this MVP
 
-Large codebases are hard to understand. New engineers ask where authentication starts or what happens when a user creates an order — and answers are buried across files, imports, and tribal knowledge.
+- Regex-based import parser over `sample-repo/`
+- `POST /index` — index sample repo into nodes/edges
+- `GET /graph` — return graph JSON
+- `POST /ask` — grounded Q&A; refuses when no matching nodes; cites file paths
+- HTML UI: graph list + ask box
 
-## Target users
+## Stack
 
-Software engineers joining a codebase, staff engineers reviewing architecture, mentors onboarding juniors.
+| Layer | Choice |
+|-------|--------|
+| Parser | Node + TypeScript (regex imports) |
+| API + UI | Express + static HTML |
+| Sample | `sample-repo/` (login → auth → database) |
 
-## Solution (intent)
+## Quick start (local)
 
-Analyse a repository, build a dependency/feature graph (“Google Maps for a codebase”), and answer architecture questions **grounded in graph nodes and file references** — not free-form LLM guesses.
+```bash
+cd 03-architecture-explorer
+npm install
+npm run dev
+```
 
-## Tech stack (planned)
+Open http://localhost:8003/
 
-- Frontend: Next.js + graph visualisation
-- Parser: TypeScript compiler API + Python AST
-- Backend: Node/TS and/or FastAPI for indexing APIs
-- Store: PostgreSQL (+ optional graph projections)
-- AI: Retrieval constrained to indexed graph + snippets; embeddings in V2
+```bash
+# Index + graph
+curl -X POST http://localhost:8003/index -H 'Content-Type: application/json' -d '{}'
+curl http://localhost:8003/graph | head
+
+# Ask (grounded)
+curl -X POST http://localhost:8003/ask \
+  -H 'Content-Type: application/json' \
+  -d '{"question":"Where does login authentication start?"}'
+
+# Refuse when no evidence
+curl -X POST http://localhost:8003/ask \
+  -H 'Content-Type: application/json' \
+  -d '{"question":"How does the payment webhook work?"}'
+```
+
+Parser CLI only:
+
+```bash
+npm run parse
+```
+
+### Tests
+
+```bash
+npm test
+```
+
+## Docker
+
+```bash
+cd 03-architecture-explorer
+docker compose up --build
+```
+
+UI/API: http://localhost:8003/
+
+## Endpoints
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/` | Graph + ask UI |
+| POST | `/index` | Index `sample-repo/` (or `{ "path": "..." }`) |
+| GET | `/graph` | Nodes/edges JSON |
+| POST | `/ask` | Graph-grounded answer with citations |
+| GET | `/health` | Liveness |
+
+## Layout
+
+```text
+parser/          Import graph extraction
+backend/         Express API
+frontend/        Minimal HTML UI
+sample-repo/     Fake login/auth/database files
+tests/           Parser smoke tests
+data/            Written graph.json after /index
+```
 
 ## Docs
 
 - [PROPOSAL.md](./PROPOSAL.md)
 - [ARCHITECTURE.md](./ARCHITECTURE.md)
 - [INTERVIEW.md](./INTERVIEW.md)
-
-## Setup
-
-Not runnable yet. Scaffold only.
