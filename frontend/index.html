@@ -180,9 +180,10 @@
       const el = document.getElementById("answer");
       el.className = data.answered ? "ok" : "warn";
       el.textContent = data.answer;
+      const provider = data.ai_provider ? ` · AI: ${data.ai_provider}` : "";
       document.getElementById("cites").textContent = data.citations?.length
-        ? "Citations: " + data.citations.join(" · ")
-        : "";
+        ? "Citations: " + data.citations.join(" · ") + provider
+        : (provider ? provider.replace(/^ · /, "") : "");
       refreshUsage();
     }
 

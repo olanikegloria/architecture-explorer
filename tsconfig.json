@@ -10,5 +10,5 @@
     "rootDir": ".",
     "resolveJsonModule": true
   },
-  "include": ["backend/**/*", "parser/**/*", "tests/**/*"]
+  "include": ["backend/**/*", "parser/**/*", "ai/**/*", "tests/**/*"]
 }
