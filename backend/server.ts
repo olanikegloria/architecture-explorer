@@ -60,7 +60,7 @@ export function answerFromGraph(question: string, g: ImportGraph) {
     return {
       answered: false,
       answer:
-        "I cannot answer from the indexed graph — no matching nodes for your question.",
+        "I cannot answer from the indexed graph - no matching nodes for your question.",
       citations: [] as string[],
       evidence: { nodes: [] as GraphNode[], edges: [] as GraphEdge[] },
     };
@@ -408,71 +408,72 @@ function renderLanding(): string {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Architecture Explorer — ask the graph, cite the files</title>
+  <title>Architecture Explorer - ask the graph, cite the files</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #0c0e12; --panel: #141820; --text: #e8eaef; --muted: #8b93a7;
-      --accent: #3d9a7a; --accent-hover: #4aaf8c;
-      --border: rgba(232,234,239,.08); --border-strong: rgba(232,234,239,.14);
+      --bg: #f7f1e8; --panel: #fffaf4; --text: #1c1917; --muted: #78716c;
+      --accent: #c45c26; --accent-hover: #a34a1c;
+      --border: rgba(28,25,23,.1); --shadow: 0 10px 32px rgba(28,25,23,.06);
     }
     * { box-sizing: border-box; }
     body {
-      margin: 0; font-family: "DM Sans", system-ui, sans-serif; color: var(--text);
-      background:
-        radial-gradient(ellipse 90% 55% at 70% -15%, rgba(61,154,122,.12), transparent 55%),
-        var(--bg);
+      margin: 0; font-family: "Source Sans 3", system-ui, sans-serif; color: var(--text);
+      background: var(--bg);
       min-height: 100vh; -webkit-font-smoothing: antialiased;
     }
-    .wrap { width: min(960px, calc(100% - 2.5rem)); margin: 0 auto; }
+    .wrap { width: min(880px, calc(100% - 3rem)); margin: 0 auto; }
     nav {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 1.5rem 0; border-bottom: 1px solid var(--border);
+      padding: 2rem 0 1.5rem; border-bottom: 1px solid var(--border);
     }
-    .brand { font-weight: 700; letter-spacing: -0.03em; }
+    .brand { font-family: "Fraunces", Georgia, serif; font-weight: 600; letter-spacing: -0.02em; font-size: 1.15rem; }
     .brand span { color: var(--accent); }
-    .nav-links { display: flex; gap: 1.25rem; align-items: center; font-size: .9rem; }
+    .nav-links { display: flex; gap: 1.5rem; align-items: center; font-size: .9rem; }
     .nav-links a { text-decoration: none; color: var(--muted); }
-    .nav-links a:hover { color: var(--text); }
+    .nav-links a:hover { color: var(--accent); }
     .btn {
-      display: inline-flex; text-decoration: none; border-radius: 8px; padding: .7rem 1.2rem;
-      font-weight: 600; font-size: .925rem; border: 1px solid transparent;
-      transition: background .15s ease, transform .15s ease;
+      display: inline-flex; text-decoration: none; border-radius: 999px; padding: .7rem 1.35rem;
+      font-weight: 600; font-size: .9rem; border: 1px solid transparent;
+      transition: background .15s ease, color .15s ease;
     }
-    .btn:hover { transform: translateY(-1px); }
-    .btn-primary { background: var(--accent); color: #0a0c10; }
+    .btn-primary { background: var(--accent); color: #fffaf4; }
     .btn-primary:hover { background: var(--accent-hover); }
-    .btn-ghost { background: transparent; border-color: var(--border-strong); color: var(--text); }
-    .hero { padding: 4.5rem 0 3.5rem; animation: fadeup .7s ease both; }
+    .btn-ghost { background: transparent; border-color: var(--border); color: var(--text); }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+    .hero { padding: 5rem 0 4rem; }
     .product {
-      font-size: .75rem; font-weight: 600; letter-spacing: .16em;
-      text-transform: uppercase; color: var(--accent); margin-bottom: 1rem;
+      font-size: .75rem; font-weight: 600; letter-spacing: .14em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 1.25rem;
     }
     h1 {
-      margin: 0 0 1rem; font-size: clamp(2.35rem, 5.5vw, 3.5rem); line-height: 1.08;
-      letter-spacing: -.045em; max-width: 14ch; font-weight: 700;
+      margin: 0 0 1.25rem; font-family: "Fraunces", Georgia, serif;
+      font-size: clamp(2.4rem, 5.5vw, 3.6rem); line-height: 1.12;
+      letter-spacing: -.03em; max-width: 16ch; font-weight: 600;
     }
-    .lede { margin: 0 0 1.75rem; color: var(--muted); font-size: 1.1rem; line-height: 1.55; max-width: 42ch; }
-    .cta-row { display: flex; flex-wrap: wrap; gap: .75rem; }
+    .lede { margin: 0 0 2rem; color: var(--muted); font-size: 1.15rem; line-height: 1.65; max-width: 40ch; }
+    .cta-row { display: flex; flex-wrap: wrap; gap: .85rem; }
     .features {
-      padding: 2.5rem 0 4rem; border-top: 1px solid var(--border);
-      display: grid; gap: 1.25rem;
+      padding: 3rem 0 4.5rem; border-top: 1px solid var(--border);
+      display: grid; gap: 2rem;
     }
-    @media (min-width: 720px) { .features { grid-template-columns: repeat(3, 1fr); gap: 1.5rem; } }
+    @media (min-width: 720px) { .features { grid-template-columns: repeat(3, 1fr); gap: 2.5rem; } }
     .feature {
-      padding: 1.35rem 1.25rem; background: var(--panel);
-      border: 1px solid var(--border); border-radius: 10px;
+      padding: 0; background: transparent; border: none; border-radius: 0;
     }
-    .feature h3 { margin: 0 0 .5rem; font-size: .95rem; }
-    .feature p { margin: 0; color: var(--muted); font-size: .9rem; line-height: 1.5; }
+    .feature h3 {
+      margin: 0 0 .65rem; font-family: "Fraunces", Georgia, serif;
+      font-size: 1.15rem; font-weight: 600; color: var(--text);
+    }
+    .feature p { margin: 0; color: var(--muted); font-size: .95rem; line-height: 1.6; }
     footer {
-      border-top: 1px solid var(--border); padding: 1.5rem 0 2.5rem; display: flex; flex-wrap: wrap;
+      border-top: 1px solid var(--border); padding: 2rem 0 3rem; display: flex; flex-wrap: wrap;
       gap: 1rem; justify-content: space-between; color: var(--muted); font-size: .85rem;
     }
     footer a { color: var(--muted); text-decoration: none; }
-    @keyframes fadeup { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+    footer a:hover { color: var(--accent); }
   </style>
 </head>
 <body>
@@ -487,7 +488,7 @@ function renderLanding(): string {
     </nav>
     <header class="hero">
       <div class="product">Architecture Explorer</div>
-      <h1>Ask the import graph. Cite the files — or refuse.</h1>
+      <h1>Ask the import graph. Cite the files - or refuse.</h1>
       <p class="lede">Index a TypeScript/JS repo into nodes and edges. Answers only from graph evidence, with file-path citations and explicit refusal when nothing matches.</p>
       <div class="cta-row">
         <a class="btn btn-primary" href="/app">Open app</a>
@@ -501,11 +502,11 @@ function renderLanding(): string {
       </div>
       <div class="feature">
         <h3>Cite or refuse</h3>
-        <p>Answers only from graph matches — with file-path citations, or an explicit refusal.</p>
+        <p>Answers only from graph matches - with file-path citations, or an explicit refusal.</p>
       </div>
       <div class="feature">
         <h3>Local eval</h3>
-        <p>Use Bearer token <code>demo</code>, or sign up. Free local stack — no paid APIs.</p>
+        <p>Use Bearer token <code>demo</code>, or sign up. Free local stack - no paid APIs.</p>
       </div>
     </section>
     <footer>
@@ -520,13 +521,14 @@ function renderLanding(): string {
 function renderLegalTerms(): string {
   return `<!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Terms of Service — Architecture Explorer</title>
-<style>body{margin:0;font-family:"DM Sans",system-ui,sans-serif;background:#0c0e12;color:#e8eaef;line-height:1.55}
-main{width:min(720px,calc(100% - 2rem));margin:2rem auto 3rem}a{color:#3d9a7a}.muted{color:#8b93a7;font-size:.9rem}</style>
+<title>Terms of Service - Architecture Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet"/>
+<style>body{margin:0;font-family:"Source Sans 3",system-ui,sans-serif;background:#f7f1e8;color:#1c1917;line-height:1.55}
+main{width:min(720px,calc(100% - 2rem));margin:2rem auto 3rem}a{color:#c45c26}h1{font-family:"Fraunces",Georgia,serif}.muted{color:#78716c;font-size:.9rem}</style>
 </head><body><main>
 <p><a href="/">← Architecture Explorer</a></p>
 <h1>Terms of Service</h1>
-<p class="muted">Stub — last updated September 5, 2026. Not legal advice.</p>
+<p class="muted">Stub - last updated September 5, 2026. Not legal advice.</p>
 <p>Architecture Explorer (“Service”) indexes import graphs and answers architecture questions with citations for evaluation and local use.</p>
 <h2>Accounts</h2>
 <ul>
@@ -541,13 +543,14 @@ main{width:min(720px,calc(100% - 2rem));margin:2rem auto 3rem}a{color:#3d9a7a}.m
 function renderLegalPrivacy(): string {
   return `<!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Privacy Policy — Architecture Explorer</title>
-<style>body{margin:0;font-family:"DM Sans",system-ui,sans-serif;background:#0c0e12;color:#e8eaef;line-height:1.55}
-main{width:min(720px,calc(100% - 2rem));margin:2rem auto 3rem}a{color:#3d9a7a}.muted{color:#8b93a7;font-size:.9rem}</style>
+<title>Privacy Policy - Architecture Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet"/>
+<style>body{margin:0;font-family:"Source Sans 3",system-ui,sans-serif;background:#f7f1e8;color:#1c1917;line-height:1.55}
+main{width:min(720px,calc(100% - 2rem));margin:2rem auto 3rem}a{color:#c45c26}h1{font-family:"Fraunces",Georgia,serif}.muted{color:#78716c;font-size:.9rem}</style>
 </head><body><main>
 <p><a href="/">← Architecture Explorer</a></p>
 <h1>Privacy Policy</h1>
-<p class="muted">Stub — last updated September 5, 2026. Not legal advice.</p>
+<p class="muted">Stub - last updated September 5, 2026. Not legal advice.</p>
 <h2>Data we store</h2>
 <ul>
 <li><strong>Account data:</strong> email, password hash, organization name, API tokens.</li>
