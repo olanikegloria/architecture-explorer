@@ -126,12 +126,11 @@
 
     async function refreshUsage() {
       try {
-        const res = await fetch("/billing/usage", { headers: { Authorization: "Bearer " + TOKEN } });
+        const res = await fetch("/usage", { headers: { Authorization: "Bearer " + TOKEN } });
         if (!res.ok) return;
         const u = await res.json();
-        const lim = u.asks_limit == null ? "∞" : u.asks_limit;
         document.getElementById("usage").textContent =
-          "Plan " + u.plan + " · asks " + u.asks_used + "/" + lim + " · token " + TOKEN.slice(0, 8);
+          "Asks this month: " + u.asks_used + " · token " + TOKEN.slice(0, 8);
       } catch (_) {}
     }
 
@@ -173,12 +172,6 @@
         body: JSON.stringify({ question }),
       });
       const data = await res.json();
-      if (res.status === 402) {
-        document.getElementById("answer").className = "warn";
-        document.getElementById("answer").textContent = data.message || "Quota exceeded";
-        document.getElementById("cites").textContent = "";
-        return;
-      }
       if (!res.ok) {
         document.getElementById("answer").textContent = data.error || "Ask failed";
         document.getElementById("cites").textContent = "";
