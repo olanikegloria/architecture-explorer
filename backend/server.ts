@@ -411,68 +411,68 @@ function renderLanding(): string {
   <title>Architecture Explorer — ask the graph, cite the files</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --ink: #0f1419; --paper: #eef2f7; --steel: #2a5f8f; --steel-deep: #163a5c;
-      --signal: #c45c26; --line: rgba(15,20,25,.12); --muted: #5a6a7a;
+      --bg: #0c0e12; --panel: #141820; --text: #e8eaef; --muted: #8b93a7;
+      --accent: #3d9a7a; --accent-hover: #4aaf8c;
+      --border: rgba(232,234,239,.08); --border-strong: rgba(232,234,239,.14);
     }
     * { box-sizing: border-box; }
     body {
-      margin: 0; font-family: "IBM Plex Sans", system-ui, sans-serif; color: var(--ink);
+      margin: 0; font-family: "DM Sans", system-ui, sans-serif; color: var(--text);
       background:
-        radial-gradient(1100px 560px at 80% -10%, rgba(42,95,143,.18), transparent 55%),
-        radial-gradient(800px 420px at -8% 40%, rgba(196,92,38,.08), transparent 50%),
-        linear-gradient(180deg, #f4f7fb 0%, var(--paper) 45%, #e4ebf3 100%);
-      min-height: 100vh;
+        radial-gradient(ellipse 90% 55% at 70% -15%, rgba(61,154,122,.12), transparent 55%),
+        var(--bg);
+      min-height: 100vh; -webkit-font-smoothing: antialiased;
     }
-    .wrap { width: min(1100px, calc(100% - 2.5rem)); margin: 0 auto; }
-    nav { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 0; }
+    .wrap { width: min(960px, calc(100% - 2.5rem)); margin: 0 auto; }
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.5rem 0; border-bottom: 1px solid var(--border);
+    }
     .brand { font-weight: 700; letter-spacing: -0.03em; }
-    .brand span { color: var(--steel); }
-    .nav-links { display: flex; gap: 1.25rem; align-items: center; font-size: .92rem; }
+    .brand span { color: var(--accent); }
+    .nav-links { display: flex; gap: 1.25rem; align-items: center; font-size: .9rem; }
     .nav-links a { text-decoration: none; color: var(--muted); }
+    .nav-links a:hover { color: var(--text); }
     .btn {
-      display: inline-flex; text-decoration: none; border-radius: 8px; padding: .7rem 1.15rem;
-      font-weight: 600; border: 1px solid transparent; transition: transform .2s ease;
+      display: inline-flex; text-decoration: none; border-radius: 8px; padding: .7rem 1.2rem;
+      font-weight: 600; font-size: .925rem; border: 1px solid transparent;
+      transition: background .15s ease, transform .15s ease;
     }
     .btn:hover { transform: translateY(-1px); }
-    .btn-primary { background: var(--steel); color: #f4f8fc; }
-    .btn-primary:hover { background: var(--steel-deep); }
-    .btn-ghost { background: transparent; border-color: var(--line); color: var(--ink); }
-    .hero { padding: 3rem 0 4rem; display: grid; gap: 2rem; align-items: end; }
-    @media (min-width: 900px) {
-      .hero { grid-template-columns: 1.05fr .95fr; min-height: calc(100vh - 5.5rem); padding-top: 2rem; }
+    .btn-primary { background: var(--accent); color: #0a0c10; }
+    .btn-primary:hover { background: var(--accent-hover); }
+    .btn-ghost { background: transparent; border-color: var(--border-strong); color: var(--text); }
+    .hero { padding: 4.5rem 0 3.5rem; animation: fadeup .7s ease both; }
+    .product {
+      font-size: .75rem; font-weight: 600; letter-spacing: .16em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 1rem;
     }
-    .product { font-size: .8rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--steel); }
     h1 {
-      margin: .35rem 0 .85rem; font-size: clamp(2.3rem, 5vw, 3.4rem); line-height: 1.05;
-      letter-spacing: -.045em; max-width: 13ch;
+      margin: 0 0 1rem; font-size: clamp(2.35rem, 5.5vw, 3.5rem); line-height: 1.08;
+      letter-spacing: -.045em; max-width: 14ch; font-weight: 700;
     }
-    .hero p { margin: 0 0 1.5rem; color: var(--muted); font-size: 1.08rem; line-height: 1.55; max-width: 38ch; }
+    .lede { margin: 0 0 1.75rem; color: var(--muted); font-size: 1.1rem; line-height: 1.55; max-width: 42ch; }
     .cta-row { display: flex; flex-wrap: wrap; gap: .75rem; }
-    .hero-visual {
-      min-height: 300px; border-radius: 18px; overflow: hidden; color: #e7ecf3;
-      background: linear-gradient(145deg, #163a5c 0%, #2a5f8f 45%, #0f1419 100%);
-      box-shadow: 0 28px 56px rgba(22,58,92,.28); animation: rise .9s ease both;
+    .features {
+      padding: 2.5rem 0 4rem; border-top: 1px solid var(--border);
+      display: grid; gap: 1.25rem;
     }
-    .terminal { padding: 1.4rem; font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: .78rem; line-height: 1.55; }
-    .dim { color: rgba(231,236,243,.55); } .hi { color: #f0c27a; } .ok { color: #7ddeb0; } .warn { color: #ffb070; }
-    @keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
-    @keyframes fadeup { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
-    .hero-copy { animation: fadeup .7s ease both; }
-    section.block { padding: 3.5rem 0; border-top: 1px solid var(--line); }
-    section.block h2 { margin: 0 0 .6rem; font-size: clamp(1.55rem, 3vw, 2rem); letter-spacing: -.03em; }
-    .lede { margin: 0 0 1.75rem; color: var(--muted); max-width: 48ch; line-height: 1.5; }
-    .split { display: grid; gap: 1.25rem; }
-    @media (min-width: 800px) { .split { grid-template-columns: 1fr 1fr; } }
-    .point h3 { margin: 0 0 .4rem; font-size: 1.05rem; }
-    .point p { margin: 0; color: var(--muted); line-height: 1.5; }
+    @media (min-width: 720px) { .features { grid-template-columns: repeat(3, 1fr); gap: 1.5rem; } }
+    .feature {
+      padding: 1.35rem 1.25rem; background: var(--panel);
+      border: 1px solid var(--border); border-radius: 10px;
+    }
+    .feature h3 { margin: 0 0 .5rem; font-size: .95rem; }
+    .feature p { margin: 0; color: var(--muted); font-size: .9rem; line-height: 1.5; }
     footer {
-      border-top: 1px solid var(--line); padding: 1.5rem 0 2.5rem; display: flex; flex-wrap: wrap;
-      gap: 1rem; justify-content: space-between; color: var(--muted); font-size: .88rem;
+      border-top: 1px solid var(--border); padding: 1.5rem 0 2.5rem; display: flex; flex-wrap: wrap;
+      gap: 1rem; justify-content: space-between; color: var(--muted); font-size: .85rem;
     }
-    footer a { color: var(--muted); }
+    footer a { color: var(--muted); text-decoration: none; }
+    @keyframes fadeup { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
   </style>
 </head>
 <body>
@@ -480,47 +480,36 @@ function renderLanding(): string {
     <nav>
       <div class="brand">Architecture <span>Explorer</span></div>
       <div class="nav-links">
-        <a href="#product">Product</a>
+        <a href="#features">Features</a>
         <a href="/legal/terms">Terms</a>
         <a class="btn btn-primary" href="/app">Open app</a>
       </div>
     </nav>
     <header class="hero">
-      <div class="hero-copy">
-        <div class="product">Architecture Explorer</div>
-        <h1>Ask the import graph. Cite the files — or refuse.</h1>
-        <p>Index a TypeScript/JS repo into nodes and edges. Answers only from graph evidence, with file-path citations and explicit refusal when nothing matches.</p>
-        <div class="cta-row">
-          <a class="btn btn-primary" href="/app">Try the product</a>
-          <a class="btn btn-ghost" href="#product">How it works</a>
-        </div>
-      </div>
-      <div class="hero-visual" aria-hidden="true">
-        <div class="terminal">
-          <div class="dim">$ POST /ask</div>
-          <div class="ok">answered: true</div>
-          <div>citations: <span class="hi">app/login/page.tsx</span></div>
-          <div class="dim">→ services/auth.ts → lib/database.ts</div>
-          <div class="warn">no evidence → refuse (never invent)</div>
-        </div>
+      <div class="product">Architecture Explorer</div>
+      <h1>Ask the import graph. Cite the files — or refuse.</h1>
+      <p class="lede">Index a TypeScript/JS repo into nodes and edges. Answers only from graph evidence, with file-path citations and explicit refusal when nothing matches.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="/app">Open app</a>
+        <a class="btn btn-ghost" href="#features">See features</a>
       </div>
     </header>
-    <section class="block" id="product">
-      <h2>Index → ask → cite or refuse</h2>
-      <p class="lede">Built for onboarding and architecture reviews. Local free stack — orgs, API tokens, and graph-grounded answers with no paid APIs.</p>
-      <div class="split">
-        <div class="point">
-          <h3>Import graph evidence</h3>
-          <p>Parse a repo into nodes and edges, then answer only from matches — with file-path citations.</p>
-        </div>
-        <div class="point">
-          <h3>Local eval in minutes</h3>
-          <p>Use Bearer token <code>demo</code>, or sign up. Refuse when the graph has no evidence.</p>
-        </div>
+    <section class="features" id="features">
+      <div class="feature">
+        <h3>Import graph</h3>
+        <p>Parse a repo into nodes and edges so architecture questions start from real structure.</p>
+      </div>
+      <div class="feature">
+        <h3>Cite or refuse</h3>
+        <p>Answers only from graph matches — with file-path citations, or an explicit refusal.</p>
+      </div>
+      <div class="feature">
+        <h3>Local eval</h3>
+        <p>Use Bearer token <code>demo</code>, or sign up. Free local stack — no paid APIs.</p>
       </div>
     </section>
     <footer>
-      <div>© 2026 Architecture Explorer — local production-ready product</div>
+      <div>© 2026 Architecture Explorer</div>
       <div><a href="/legal/terms">Terms</a> · <a href="/legal/privacy">Privacy</a> · <a href="/app">App</a></div>
     </footer>
   </div>
@@ -532,8 +521,8 @@ function renderLegalTerms(): string {
   return `<!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Terms of Service — Architecture Explorer</title>
-<style>body{margin:0;font-family:"IBM Plex Sans",system-ui,sans-serif;background:#eef2f7;color:#0f1419;line-height:1.55}
-main{width:min(720px,calc(100% - 2rem));margin:2rem auto 3rem}a{color:#2a5f8f}.muted{color:#5a6a7a;font-size:.9rem}</style>
+<style>body{margin:0;font-family:"DM Sans",system-ui,sans-serif;background:#0c0e12;color:#e8eaef;line-height:1.55}
+main{width:min(720px,calc(100% - 2rem));margin:2rem auto 3rem}a{color:#3d9a7a}.muted{color:#8b93a7;font-size:.9rem}</style>
 </head><body><main>
 <p><a href="/">← Architecture Explorer</a></p>
 <h1>Terms of Service</h1>
@@ -553,8 +542,8 @@ function renderLegalPrivacy(): string {
   return `<!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Privacy Policy — Architecture Explorer</title>
-<style>body{margin:0;font-family:"IBM Plex Sans",system-ui,sans-serif;background:#eef2f7;color:#0f1419;line-height:1.55}
-main{width:min(720px,calc(100% - 2rem));margin:2rem auto 3rem}a{color:#2a5f8f}.muted{color:#5a6a7a;font-size:.9rem}</style>
+<style>body{margin:0;font-family:"DM Sans",system-ui,sans-serif;background:#0c0e12;color:#e8eaef;line-height:1.55}
+main{width:min(720px,calc(100% - 2rem));margin:2rem auto 3rem}a{color:#3d9a7a}.muted{color:#8b93a7;font-size:.9rem}</style>
 </head><body><main>
 <p><a href="/">← Architecture Explorer</a></p>
 <h1>Privacy Policy</h1>
