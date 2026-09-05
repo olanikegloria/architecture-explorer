@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Architecture Explorer</title>
+  <title>Architecture Explorer — App</title>
   <style>
     :root {
       --bg: #0f1419;
@@ -27,8 +27,10 @@
       padding: 1.5rem 2rem 0.5rem;
       border-bottom: 1px solid var(--border);
     }
-    header h1 { margin: 0; font-size: 1.4rem; letter-spacing: -0.02em; }
+    header a.home { color: var(--accent); text-decoration: none; font-size: .9rem; }
+    header h1 { margin: 0.35rem 0 0; font-size: 1.4rem; letter-spacing: -0.02em; }
     header p { margin: 0.35rem 0 1rem; color: var(--muted); font-size: 0.95rem; }
+    #usage { font-size: .85rem; color: var(--muted); margin-bottom: .75rem; }
     main {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -90,8 +92,10 @@
 </head>
 <body>
   <header>
+    <a class="home" href="/">← Marketing</a>
     <h1>Architecture Explorer</h1>
     <p>Import graph from <code>sample-repo/</code> + grounded Q&amp;A with file citations.</p>
+    <div id="usage">Token: demo</div>
   </header>
   <main>
     <section>
@@ -114,8 +118,29 @@
     </section>
   </main>
   <script>
+    const TOKEN = localStorage.getItem("ae_token") || "demo";
+    const authHeaders = () => ({
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + TOKEN,
+    });
+
+    async function refreshUsage() {
+      try {
+        const res = await fetch("/billing/usage", { headers: { Authorization: "Bearer " + TOKEN } });
+        if (!res.ok) return;
+        const u = await res.json();
+        const lim = u.asks_limit == null ? "∞" : u.asks_limit;
+        document.getElementById("usage").textContent =
+          "Plan " + u.plan + " · asks " + u.asks_used + "/" + lim + " · token " + TOKEN.slice(0, 8);
+      } catch (_) {}
+    }
+
     async function indexRepo() {
-      const res = await fetch("/index", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" });
+      const res = await fetch("/index", {
+        method: "POST",
+        headers: authHeaders(),
+        body: "{}",
+      });
       const data = await res.json();
       document.getElementById("stats").textContent = res.ok
         ? `Indexed ${data.nodes} nodes / ${data.edges} edges at ${data.indexedAt}`
@@ -124,7 +149,7 @@
     }
 
     async function loadGraph() {
-      const res = await fetch("/graph");
+      const res = await fetch("/graph", { headers: { Authorization: "Bearer " + TOKEN } });
       if (!res.ok) {
         document.getElementById("tree").innerHTML = "<li class='warn'>No graph — click Index.</li>";
         return;
@@ -144,10 +169,16 @@
       const question = document.getElementById("question").value;
       const res = await fetch("/ask", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: authHeaders(),
         body: JSON.stringify({ question }),
       });
       const data = await res.json();
+      if (res.status === 402) {
+        document.getElementById("answer").className = "warn";
+        document.getElementById("answer").textContent = data.message || "Quota exceeded";
+        document.getElementById("cites").textContent = "";
+        return;
+      }
       if (!res.ok) {
         document.getElementById("answer").textContent = data.error || "Ask failed";
         document.getElementById("cites").textContent = "";
@@ -159,11 +190,13 @@
       document.getElementById("cites").textContent = data.citations?.length
         ? "Citations: " + data.citations.join(" · ")
         : "";
+      refreshUsage();
     }
 
     document.getElementById("btnIndex").onclick = indexRepo;
     document.getElementById("btnRefresh").onclick = loadGraph;
     document.getElementById("btnAsk").onclick = ask;
+    refreshUsage();
     loadGraph();
   </script>
 </body>
